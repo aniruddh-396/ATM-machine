@@ -1,0 +1,146 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+//Linked list is collection of nodes,every node is having two parts as data and next
+//we need to create structure for a node
+
+struct node
+{
+int data;
+struct node *next,*prev;
+};
+
+//start is address of first node
+struct node *start=NULL; 
+
+//function definition for inserting a new node into single linked list
+void insert()
+{
+	struct node *temp,*r,*s; //declare node temp,r,s of type struct node,temp is node to be inserted
+	int info;
+	temp=(struct node *)malloc(sizeof(struct node)); //allocate dynamic memory to temp,malloc() will return address to temp at run time
+	printf("\nEnter value to be inserted  ");
+	scanf("%d",&temp->data);//temp->data is data part of temp node
+	temp->next=NULL;//temp->next is next part of temp node
+	temp->prev=NULL;//temp->prev is previous part of temp node
+	if(start==NULL)//before performing insertion,first check whether linked list is empty or not,if it is empty,new node temp will become start node
+	start=temp; //make temp node as start node
+	else //linked list is not empty 
+	{
+		//In any linked list,we have control over values,not on addresses,so input a value from
+		//user after which you want to insert temp,that value is info
+		printf("\nEnter the value after which you want to insert a new value  ");
+		scanf("%d",&info);
+		r=start; //as we need to find a node whose data part is equal to info,
+		//so we have taken r node.By making r as start,we will drag r till its data part doesnt match with info
+		while(r->data!=info)//loop will continue till r's data part is not matched with info
+	    r=r->next; //we will get r here, r=r->next means dragging r till loop condition is true
+	    if(r->next==NULL)//new node to be inserted after last node
+	    {
+	    	r->next=temp;
+	    	temp->prev=r;
+		}
+		else //somwhere in between
+		{
+		s=r->next; //we will get s here,immediate node of r will be s by s=r->next
+	    r->next=temp;//r and s are ready,now insert temp,temp will be in between r and s
+	    temp->next=s;
+	    temp->prev=r;
+	    s->prev=temp;
+	}//end of inner else
+	printf("\nNew value %d is inserted",temp->data);
+}//end of outer else
+}//end of insert
+
+void del()//function defintion for deleting a node from linked list
+{
+	struct node *temp,*r,*s; //declaring nodes of type struct, temp is node which is supposed to be deleted 
+	int info;
+	if(start==NULL) //check whether linked list is empty or not.If empty,we can't perform del()
+	printf("\nLinked List is empty");
+	else //there are nodes in linked list
+	{
+		//we dont know address of node to be deleted,so search that node with the help of data part
+		printf("\nEnter the value you want to delete ");
+		scanf("%d",&info); //info is the value of node which is to be deleted
+		//search for temp,drag temp till its data part doesnt match with info,so first make temp as start
+		temp=start;
+		while(temp->data!=info)//loop will continue till temp's data part is not matched with info
+		temp=temp->next;//we will get temp here, temp=temp->next means dragging temp till loop condition is true
+		//Now after gettting temp,check where temp is?
+		if(temp==NULL)//if temp is null,means temp is last node
+		{
+			printf("\n%d is deleted",temp->data);
+			r=start; //we need to delete temp, but before deleting temp, we need to search a node prior to temp,
+			//as next part of node prior to temp will be NULL,so search it.Suppose r is that node,make it start and
+			//drag r till r->next is not temp
+			while(r->next!=temp)//loop will continue till r's next is not temp
+			r=r->next;//drag r
+			r->next=NULL;//as we got r,its prior to temp,make r's next as NULL
+			temp->next=NULL;
+			temp->prev=NULL;//as we are going to free temp,make its prev part as NULL,next part is already NULL
+		}
+		else if(temp==start)//if temp is start means temp is starting node
+		{
+			printf("\n%d is deleted",temp->data);
+			start=start->next; //after removing starting node,new start will be updated as start->next
+			temp->next=NULL;//as we are going to free temp,make its next part as NULL
+			temp->prev=NULL;//as we are going to free temp,make its prev part as NULL
+		}
+		else //temp is not first,not last,it is at somewhere middle 
+		{
+			printf("\n%d is deleted",temp->data);
+			r=start; //we need to find a node prior to temp,as temp's next node will be that prior node's next.
+			//Consider that node as S,make s as start.Drag s till next part of s is not temp
+			while(r->next!=temp)//loop will continue till r's next is not temp
+			r=r->next;//drag r
+			s=temp->next;//make s as temp->next
+			r->next=s;
+			s->prev=r;
+			temp->next=NULL;//as we are going to free temp,make its next part as NULL
+			temp->prev=NULL;//as we are going to free temp,make its prev part as NULL
+		}//end of inner else
+        free(temp);//free temp node
+	}//end of outer else
+}//end of del()
+
+void display()//function definition for displaying nodes
+{
+	struct node *temp;
+	if(start==NULL)//check whether nodes are present in linked list or not 
+	printf("\nLinked List is empty");
+	else //linked list is not empty,display data part
+	{
+		temp=start;//as we need to display all node's data part,we have taken temp node and make it as start node
+		while(temp!=NULL)//loop will continue till last node
+		{
+			printf("\n%d",temp->data);//display temp->data for every node
+			temp=temp->next;//drag temp
+		}
+	}
+}
+
+void main()
+{
+	int choice;
+	do//meny driven program
+	{
+	printf("\n1.Insert");
+	printf("\n2.Delete");
+	printf("\n3.Display");
+	printf("\n4.Exit");
+	printf("\nEnter your choice ");
+	scanf("%d",&choice);
+	switch(choice)
+	{
+		case 1 : insert();//function call
+				 break;
+		case 2 : del();//function call
+				break;
+		case 3 : display();//function call
+				break;
+		case 4 : exit(0);
+				break;
+	}
+	}while(choice!=4);
+}
